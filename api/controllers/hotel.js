@@ -95,16 +95,32 @@ export const getHotel = (req, res) => {
 };
 
 export const getAllHotel = (req, res) => {
-    console.log("📌 Route /allhotels appelée");
-    const query = `
-        SELECT * FROM hotels
-    `;
-    
-    client.query(query, (err, data) => {
+
+    const { min = 1, max = 999, limit, ...others } = req.query;
+
+    let query = `SELECT * FROM hotels WHERE cheapestprice > $1 AND cheapestprice < $2`;
+    const values = [min, max];
+
+    // Ajouter les autres filtres dynamiquement
+    let index = 3; // Car $1 et $2 sont déjà utilisés pour min et max
+    for (let key in others) {
+        query += ` AND ${key} = $${index}`;
+        values.push(others[key]);
+        index++;
+    }
+
+    // Ajout de la limite si spécifiée
+    if (limit) {
+        query += ` LIMIT $${index}`;
+        values.push(limit);
+    }
+
+    client.query(query, values, (err, result) => {
         if (err) {
-            console.log(err, 'erreur');
+            console.error("Erreur lors de la récupération des hôtels :", err);
+            return res.status(500).json({ error: "Erreur serveur" });
         }
-        return res.status(200).json(data.rows);
+        res.status(200).json(result.rows);
     });
 };
 
