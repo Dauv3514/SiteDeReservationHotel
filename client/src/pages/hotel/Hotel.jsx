@@ -5,43 +5,30 @@ import MailList from "../../components/mailList/MailList";
 import Footer from "../../components/footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faCircleXmark, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useContext,useState } from 'react';
+import { useLocation } from "react-router-dom"
+import useFetch from "../../hooks/useFetch";
+import { SearchContext } from "../../context/SearchContext";
 
 export const Hotel = () => {
+  const location = useLocation()
+  const id = location.pathname.split("/")[2];
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
-  const photos = [
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-    {
-      src: "https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=",
-    },
-  ]
+  const {data, loading} = useFetch(`/hotels/${id}`)
+  
+  const{dates, options} = useContext(SearchContext);
+  console.log(dates, "voir");
+
+  const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+  function dayDifference(date1, date2) {
+    const timeDiff = Math.abs(date2.getTime() - date1.getTime());
+    const diffDays = Math.ceil(timeDiff / MILLISECONDS_PER_DAY);
+    return diffDays;
+  }
+
+  const days = dayDifference(dates[0].endDate, dates[0].startDate);
+
   const handleOpen = (i) => {
     setSlideNumber(i);
     setOpen(true);
@@ -54,19 +41,19 @@ export const Hotel = () => {
       newSlideNumber = slideNumber === 5 ? 0 : slideNumber+1
     }
     setSlideNumber(newSlideNumber);
-    console.log(newSlideNumber, "ok");
   }
 
   return (
     <div>
       <Navbar />
       <Header type="list"/>
+      {loading ? ("loading") : (
       <div className="hotelContainer">
         {open && <div className="slider">
           <FontAwesomeIcon icon={faCircleXmark} onClick={() => setOpen(false)} className="close"/>
           <FontAwesomeIcon icon={faArrowLeft} onClick={() => handleMove()} className="arrow"/>
           <div className="sliderWrapper">
-            <img src={photos[slideNumber].src} alt="" className="sliderImg" />
+            <img src={data.photos[slideNumber]} alt="" className="sliderImg" />
           </div>
           <FontAwesomeIcon icon={faArrowRight} onClick={() => handleMove()} className="arrow"/>
         </div> }
@@ -77,37 +64,35 @@ export const Hotel = () => {
           </h1>
           <div className="hotelAddress">
             <FontAwesomeIcon icon={faLocationDot} />
-            <span>Elton St 125 New York</span>
+            <span>{data.address}</span>
           </div>
           <span className="hotelDistance">
-            Excellente location - 500m du centre
+            Excellente location - {data.distance}m du centre
           </span>
           <span className="hotelPriceHighlight">
-            Réservez un séjour de plus de 114$ dans cette propriété et obtenez un taxi gratuit pour l'aéroport.
+            Réservez un séjour de plus de ${data.cheapestprice} dans cette propriété et obtenez un taxi gratuit pour l'aéroport.
           </span>
           <div className="hotelImages">
-            {photos.map((photo, i) =>( 
+            {data.photos?.map((photo, i) =>( 
               <div className="hotelImgWrapper">
-                <img onClick={() => handleOpen(i)} src={photo.src} alt="" className="hotelImg" />
+                <img onClick={() => handleOpen(i)} src={photo} alt="" className="hotelImg" />
               </div>
             ))}
           </div>
           <div className="hotelDetails">
             <div className="hotelDetailsTexts">
-              <h1 className="hotelTitle">Location dans Varsovie</h1>
+              <h1 className="hotelTitle">{data.title}</h1>
               <p className="hotelDesc">
-                À louer : Appartement à Varsovie 🏡
-                Charmant appartement de 45 m² en plein centre de Varsovie, idéal pour étudiants, expatriés ou professionnels. Il comprend une chambre, un salon, une cuisine équipée et une salle de bain. Wi-Fi haut débit, balcon avec vue et lave-linge inclus.
-                Proche des transports (métro, tram, bus) et de toutes commodités. Disponible immédiatement.
+                {data.description}
               </p>
             </div>
             <div className="hotelDetailsPrice">
-              <h1>Parfait pour une nuit</h1>
+              <h1>Parfait pour une {days} nuits</h1>
                 <span>
                 Situé en plein cœur de Cracovie, cet établissement bénéficie d'un excellent score de localisation de 9,8 !
                 </span>
                 <h2>
-                  <b>$945</b> (9 nuits)
+                  <b>${days * data.cheapestprice * options.chambre}</b> ({days} nuits)
                 </h2>
                 <button>Réservez dès maintenant !</button>
             </div>
@@ -116,6 +101,7 @@ export const Hotel = () => {
         <MailList />
         <Footer />
       </div>
+      )}
     </div>
   )
 }

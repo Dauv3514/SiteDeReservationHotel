@@ -1,50 +1,35 @@
+import useFetch from "../../hooks/useFetch";
 import "./featuredProperties.css";
 
-export const FeaturedProperties = () => {
+const FeaturedProperties = () => {
+  const { data, loading } = useFetch("/hotels?featured=true&limit=4");
+
   return (
     <div className="fp">
-        <div className="fpItem">
-            <img className="fpImg" src="https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=" alt="" />
-            <span className="fpName">Aparthotel stare maesto</span>
-            <span className="fpCity">Madrid</span>
-            <span className="fpPrice">Starting from $120</span>
-            <div className="fpRating">
-                <button>8.9</button>
+      {loading ? (
+        "Loading"
+      ) : (
+        <>
+          {data.map((item) => (
+            <div className="fpItem" key={item.id}>
+              <img
+                src={item.photos[0]}
+                alt=""
+                className="fpImg"
+              />
+              <span className="fpName">{item.name}</span>
+              <span className="fpCity">{item.city}</span>
+              <span className="fpPrice">A partir de ${item.cheapestprice}</span>
+              {item.rating && <div className="fpRating">
+                <button>{item.rating}</button>
                 <span>Excellent</span>
+              </div>}
             </div>
-        </div>
-        <div className="fpItem">
-            <img className="fpImg" src="https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=" alt="" />
-            <span className="fpName">Aparthotel stare maesto</span>
-            <span className="fpCity">Madrid</span>
-            <span className="fpPrice">Starting from $120</span>
-            <div className="fpRating">
-                <button>8.9</button>
-                <span>Excellent</span>
-            </div>
-        </div>
-        <div className="fpItem">
-            <img className="fpImg" src="https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=" alt="" />
-            <span className="fpName">Aparthotel stare maesto</span>
-            <span className="fpCity">Madrid</span>
-            <span className="fpPrice">Starting from $120</span>
-            <div className="fpRating">
-                <button>8.9</button>
-                <span>Excellent</span>
-            </div>
-        </div>
-        <div className="fpItem">
-            <img className="fpImg" src="https://cf.bstatic.com/xdata/images/city/max500/957801.webp?k=a969e39bcd40cdcc21786ba92826063e3cb09bf307bcfeac2aa392b838e9b7a5&o=" alt="" />
-            <span className="fpName">Aparthotel stare maesto</span>
-            <span className="fpCity">Madrid</span>
-            <span className="fpPrice">Starting from $120</span>
-            <div className="fpRating">
-                <button>8.9</button>
-                <span>Excellent</span>
-            </div>
-        </div>
+          ))}
+        </>
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default FeaturedProperties;
