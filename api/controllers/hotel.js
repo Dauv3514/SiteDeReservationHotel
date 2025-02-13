@@ -174,4 +174,23 @@ export const countByType = async (req, res, next) => {
       next(err);
     }
   };
+
+  export const getHotelRooms = async (req,res,next) => {
+    try {
+      const hotelId = req.params.id;
+  
+      // Récupérer les chambres associées à l'hôtel
+      const query = `
+        SELECT *
+        FROM rooms
+        WHERE hotel_id = $1
+      `;
+  
+      const { rows } = await client.query(query, [hotelId]);
+  
+      res.status(200).json(rows);
+    } catch (err) {
+      next(err);
+    }
+  };
   

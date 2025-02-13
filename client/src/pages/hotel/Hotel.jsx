@@ -3,12 +3,14 @@ import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import MailList from "../../components/mailList/MailList";
 import Footer from "../../components/footer/Footer";
+import Reserve from "../../components/reserve/Reserve";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faCircleXmark, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { useContext,useState } from 'react';
-import { useLocation } from "react-router-dom"
+import { useContext, useState } from 'react';
+import { useLocation, useNavigate } from "react-router-dom"
 import useFetch from "../../hooks/useFetch";
 import { SearchContext } from "../../context/SearchContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export const Hotel = () => {
   const location = useLocation()
@@ -16,6 +18,9 @@ export const Hotel = () => {
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
   const {data, loading} = useFetch(`/hotels/${id}`)
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(false);
   
   const{dates, options} = useContext(SearchContext);
   console.log(dates, "voir");
@@ -43,6 +48,15 @@ export const Hotel = () => {
     setSlideNumber(newSlideNumber);
   }
 
+  const handleClick = () => {
+    console.log('ok',user)
+    if (user) {
+      setOpenModal(true);
+      console.log('tres',user)
+    } else {
+      navigate("/login");
+    }
+  };
   return (
     <div>
       <Navbar />
@@ -94,7 +108,7 @@ export const Hotel = () => {
                 <h2>
                   <b>${days * data.cheapestprice * options.chambre}</b> ({days} nuits)
                 </h2>
-                <button>Réservez dès maintenant !</button>
+                <button onClick={handleClick}>Réservez dès maintenant !</button>
             </div>
           </div>
         </div>
@@ -102,6 +116,7 @@ export const Hotel = () => {
         <Footer />
       </div>
       )}
+      {openModal && <Reserve setOpen={setOpenModal} hotelId={id}/>}
     </div>
   )
 }
