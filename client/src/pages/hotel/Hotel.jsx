@@ -17,7 +17,7 @@ export const Hotel = () => {
   const id = location.pathname.split("/")[2];
   const [slideNumber, setSlideNumber] = useState(0);
   const [open, setOpen] = useState(false);
-  const {data, loading} = useFetch(`/hotels/${id}`)
+  const {data, loading} = useFetch(`/hotels/find/${id}`)
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
@@ -88,7 +88,7 @@ export const Hotel = () => {
           </span>
           <div className="hotelImages">
             {data.photos?.map((photo, i) =>( 
-              <div className="hotelImgWrapper">
+              <div className="hotelImgWrapper" key={i}>
                 <img onClick={() => handleOpen(i)} src={photo} alt="" className="hotelImg" />
               </div>
             ))}

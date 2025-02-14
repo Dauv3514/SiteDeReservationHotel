@@ -18,8 +18,8 @@
   
   .rClose {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 6px;
+    right: 6px;
     cursor: pointer;
   }
   

@@ -13,7 +13,7 @@ export const addRoom = async (req, res) => {
     }
 
     const query = `
-        INSERT INTO rooms (title, description, price, maxpeople, roomnumbers, id) 
+        INSERT INTO rooms (title, description, price, maxpeople, roomnumbers, hotel_id) 
         VALUES ($1, $2, $3, $4, $5, $6) 
         RETURNING *;
     `;

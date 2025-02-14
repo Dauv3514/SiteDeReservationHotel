@@ -175,7 +175,7 @@ export const countByType = async (req, res, next) => {
     }
   };
 
-  export const getHotelRooms = async (req,res,next) => {
+  export const getHotelRooms = async (req,res) => {
     try {
       const hotelId = req.params.id;
   
@@ -190,7 +190,11 @@ export const countByType = async (req, res, next) => {
   
       res.status(200).json(rows);
     } catch (err) {
-      next(err);
+        if (err) {
+            console.error("Erreur lors de la récupération des chambres :", err);
+            return res.status(500).json({ error: "Erreur lors de la récupération des chambres" });
+        }
+        return res.status(404).json({ message: "Aucune chambre trouvée pour cet hôtel" });
     }
   };
   

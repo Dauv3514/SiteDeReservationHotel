@@ -4,20 +4,6 @@ import { verifyAdmin } from "../utils/verifyToken.js";
 
 const router = express.Router();
 
-// Route pour compter les hôtels par ville
-router.get("/countByCity", countByCity);
-
-// Route pour compter les hôtels par type
-router.get("/countByType", countByType);
-
-router.get("room/:id", getHotelRooms)
-
-// Route pour obtenir tous les hôtels
-router.get("/", getAllHotel);
-
-// Route pour obtenir un hôtel par son ID
-router.get("/:id", getHotel);
-
 // Route pour ajouter un hôtel
 router.post("/", verifyAdmin, addHotel);
 
@@ -26,5 +12,20 @@ router.put("/:id", verifyAdmin, updateHotel);
 
 // Route pour supprimer un hôtel par son ID
 router.delete("/:id", verifyAdmin, deleteHotel);
+
+// Route pour obtenir un hôtel par son ID
+router.get("/find/:id", getHotel);
+
+// Route pour obtenir tous les hôtels
+router.get("/", getAllHotel);
+
+// Route pour compter les hôtels par ville
+router.get("/countByCity", countByCity);
+
+// Route pour compter les hôtels par type
+router.get("/countByType", countByType);
+
+// Route pour obtenir les chambres d'un hôtel
+router.get("/room/:id", getHotelRooms);
 
 export default router;
